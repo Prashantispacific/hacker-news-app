@@ -6,6 +6,10 @@
       "destination": "/guide.html"
     },
     {
+      "source": "/comparison.html",
+      "destination": "/comparison.html"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }
