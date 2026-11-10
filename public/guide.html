@@ -76,6 +76,25 @@
         font-size: 15px;
         -webkit-font-smoothing: antialiased;
       }
+      #nl-badge-frame,
+      #nl-hud-frame,
+      iframe#nl-badge-frame,
+      iframe#nl-hud-frame,
+      iframe[id^="nl-"],
+      iframe[title*="Netlify"],
+      iframe[srcdoc*="Netlify"],
+      iframe[src*="netlify"],
+      netlify-drawer,
+      .netlify-badge {
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+        pointer-events: none !important;
+        clip-path: path("M0 0Z") !important;
+        position: fixed !important;
+        bottom: -9999px !important;
+        right: -9999px !important;
+      }
       a {
         color: var(--link);
         text-decoration: none;

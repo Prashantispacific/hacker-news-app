@@ -6,6 +6,13 @@
   NETLIFY_PREVIEW_DRAWER = "false"
   NETLIFY_FEEDBACK = "false"
   ENABLE_NETLIFY_FEEDBACK = "false"
+  NETLIFY_HUD = "false"
+
+[[redirects]]
+  from = "/.netlify/scripts/hud*"
+  to = "/empty.js"
+  status = 200
+  force = true
 
 [[redirects]]
   from = "/guide.html"

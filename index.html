@@ -69,10 +69,50 @@
       }
     </script>
 
-    <!-- Suppress Netlify feedback badge / preview drawer -->
+    <!-- Critical suppression for Netlify badge / HUD & feedback drawer -->
+    <style>
+      #nl-badge-frame,
+      #nl-hud-frame,
+      iframe#nl-badge-frame,
+      iframe#nl-hud-frame,
+      iframe[id^="nl-"],
+      iframe[title*="Netlify"],
+      iframe[title*="Powered by Netlify"],
+      iframe[srcdoc*="Powered by Netlify"],
+      iframe[srcdoc*="netlify"],
+      iframe[src*="netlify"],
+      netlify-drawer,
+      .netlify-badge {
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+        pointer-events: none !important;
+        clip-path: path("M0 0Z") !important;
+        transform: scale(0) !important;
+        position: fixed !important;
+        bottom: -9999px !important;
+        right: -9999px !important;
+      }
+    </style>
     <script>
       window.__NETLIFY_FEEDBACK_DISABLED__ = true;
       window.__NETLIFY_PREVIEW_DRAWER_DISABLED__ = true;
+      try {
+        localStorage.setItem("nl-hud:public:v1", "hidden:" + (Date.now() + 604800000));
+        localStorage.setItem("nl-hud:owner-private:v1", "hidden");
+      } catch (e) {}
+
+      function purgeNetlify() {
+        try {
+          var els = document.querySelectorAll('#nl-badge-frame, #nl-hud-frame, iframe[id^="nl-"], iframe[title*="Netlify"], script[data-nf-variant], script[src*="hud?variant"]');
+          for (var i = 0; i < els.length; i++) {
+            if (els[i].tagName === 'IFRAME' || els[i].tagName === 'SCRIPT') {
+              els[i].remove();
+            }
+          }
+        } catch (e) {}
+      }
+
       try {
         const observer = new MutationObserver(function(mutations) {
           for (var i = 0; i < mutations.length; i++) {
@@ -81,18 +121,34 @@
               var node = added[j];
               if (node.nodeType === 1) {
                 var name = (node.tagName || '').toLowerCase();
-                if (name.indexOf('netlify') !== -1 || (node.id && node.id.indexOf('netlify') !== -1)) {
-                  node.remove();
+                var id = (node.id || '').toLowerCase();
+                var title = (node.getAttribute && node.getAttribute('title') || '').toLowerCase();
+                if (
+                  name.indexOf('netlify') !== -1 ||
+                  id.indexOf('netlify') !== -1 ||
+                  id === 'nl-badge-frame' ||
+                  id === 'nl-hud-frame' ||
+                  title.indexOf('netlify') !== -1 ||
+                  (node.getAttribute && node.getAttribute('data-nf-variant'))
+                ) {
+                  if (node.tagName === 'IFRAME' || node.tagName === 'SCRIPT' || name.indexOf('netlify') !== -1) {
+                    node.remove();
+                  }
                 }
               }
             }
           }
         });
         observer.observe(document.documentElement, { childList: true, subtree: true });
+        window.addEventListener('DOMContentLoaded', purgeNetlify);
+        window.addEventListener('load', purgeNetlify);
       } catch (e) {}
     </script>
   </head>
   <body class="bg-black text-[#e8e8e8] antialiased selection:bg-[#ff6600]/30 selection:text-white">
+    <!-- Sentinel elements preventing Netlify HUD initialization -->
+    <div id="nl-badge-frame" style="display:none!important;position:fixed!important;bottom:-9999px!important;right:-9999px!important;width:0!important;height:0!important;opacity:0!important;pointer-events:none!important;" aria-hidden="true"></div>
+    <div id="nl-hud-frame" style="display:none!important;position:fixed!important;bottom:-9999px!important;right:-9999px!important;width:0!important;height:0!important;opacity:0!important;pointer-events:none!important;" aria-hidden="true"></div>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
     <!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "3a8f84fcbdd5440199614241273e160e"}'></script><!-- End Cloudflare Web Analytics -->

@@ -184,7 +184,18 @@
   -webkit-overflow-scrolling: touch;
 }
 
-/* Suppress Netlify collaborative preview drawer, badge, and feedback widgets */
+/* Suppress Netlify HUD, badge, collaborative preview drawer, and feedback widgets */
+#nl-badge-frame,
+#nl-hud-frame,
+iframe#nl-badge-frame,
+iframe#nl-hud-frame,
+iframe[id^="nl-"],
+iframe[title*="Netlify"],
+iframe[title*="Powered by Netlify"],
+iframe[srcdoc*="Powered by Netlify"],
+iframe[srcdoc*="netlify"],
+iframe[src*="netlify"],
+iframe[id*="netlify"],
 netlify-drawer,
 #netlify-drawer,
 .netlify-drawer,
@@ -193,18 +204,19 @@ netlify-drawer,
 div[class*="netlify-drawer"],
 div[id*="netlify-drawer"],
 div[class*="netlify-feedback"],
-iframe[src*="netlify"],
-iframe[id*="netlify"],
+div[id^="nl-"],
 #netlify-identity-widget,
 .netlify-badge {
   display: none !important;
   visibility: hidden !important;
   opacity: 0 !important;
   pointer-events: none !important;
-  z-index: -9999 !important;
+  z-index: -99999 !important;
   width: 0 !important;
   height: 0 !important;
   position: absolute !important;
   left: -9999px !important;
   top: -9999px !important;
+  clip-path: path("M0 0Z") !important;
+  transform: scale(0) !important;
 }
