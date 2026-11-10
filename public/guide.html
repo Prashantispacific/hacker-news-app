@@ -1,0 +1,603 @@
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Platform & Customization Guide — Hacker News by PG</title>
+    <meta name="title" content="Platform & Customization Guide — Hacker News by PG" />
+    <meta name="description" content="Complete documentation and user guide for Hacker News by PG. Learn how custom channel filters, discussion signal tools, and on-device mute lists work." />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <meta name="google-site-verification" content="tPq1m-nB2Mgd5CxCny4RQx5ugWn5Z2VSGdkLoqYMDPE" />
+    <link rel="canonical" href="https://hackernewsbypg.netlify.app/guide.html" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="article" />
+    <meta property="og:url" content="https://hackernewsbypg.netlify.app/guide.html" />
+    <meta property="og:site_name" content="Hacker News by PG" />
+    <meta property="og:title" content="Platform & Customization Guide — Hacker News by PG" />
+    <meta property="og:description" content="Complete documentation for Hacker News by PG: deterministic channel knobs, discussion signal tools, guide rails, and local IndexedDB persistence." />
+    <meta property="og:image" content="https://hackernewsbypg.netlify.app/pwa-512x512.png" />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://hackernewsbypg.netlify.app/guide.html" />
+    <meta property="twitter:title" content="Platform & Customization Guide — Hacker News by PG" />
+    <meta property="twitter:description" content="Complete documentation for Hacker News by PG: deterministic channel knobs, discussion signal tools, guide rails, and local IndexedDB persistence." />
+    <meta property="twitter:image" content="https://hackernewsbypg.netlify.app/pwa-512x512.png" />
+
+    <!-- Schema -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "TechArticle",
+        "headline": "Platform & Customization Guide — Hacker News by PG",
+        "description": "Complete documentation for Hacker News by PG: deterministic channel knobs, discussion signal tools, guide rails, and local IndexedDB persistence.",
+        "author": {
+          "@type": "Person",
+          "name": "Prashant"
+        },
+        "publisher": {
+          "@type": "Organization",
+          "name": "Hacker News by PG",
+          "url": "https://hackernewsbypg.netlify.app/"
+        },
+        "mainEntityOfPage": "https://hackernewsbypg.netlify.app/guide.html",
+        "datePublished": "2026-11-10",
+        "dateModified": "2026-11-10"
+      }
+    </script>
+    <meta name="theme-color" content="#000000" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <style>
+      :root {
+        --bg-base: #000000;
+        --bg-card: #0c0c0c;
+        --bg-elevated: #141414;
+        --border-subtle: rgba(255, 255, 255, 0.08);
+        --text-primary: #ededed;
+        --text-secondary: #909090;
+        --text-muted: #606060;
+        --accent: #ff6600;
+        --link: #6cb6ff;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        background-color: var(--bg-base);
+        color: var(--text-primary);
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        line-height: 1.65;
+        font-size: 15px;
+        -webkit-font-smoothing: antialiased;
+      }
+      a {
+        color: var(--link);
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+      .font-mono {
+        font-family: 'JetBrains Mono', monospace;
+      }
+      .container {
+        max-width: 820px;
+        margin: 0 auto;
+        padding: 40px 24px 100px;
+      }
+      header {
+        border-bottom: 1px solid var(--border-subtle);
+        padding-bottom: 32px;
+        margin-bottom: 48px;
+      }
+      .logo-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 24px;
+      }
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        text-decoration: none;
+        color: #fff;
+      }
+      .brand-box {
+        width: 26px;
+        height: 26px;
+        background: var(--accent);
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 14px;
+        color: #000;
+        font-family: 'JetBrains Mono', monospace;
+      }
+      .brand-title {
+        font-size: 17px;
+        font-weight: 600;
+        letter-spacing: -0.01em;
+      }
+      .brand-by {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 12px;
+        color: var(--accent);
+        margin-left: 6px;
+      }
+      .back-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 12px;
+        background: var(--bg-elevated);
+        border: 1px solid var(--border-subtle);
+        color: #d0d0d0;
+        padding: 6px 14px;
+        border-radius: 9999px;
+        transition: all 0.15s ease;
+      }
+      .back-btn:hover {
+        background: #202020;
+        color: #fff;
+        text-decoration: none;
+      }
+      h1 {
+        font-size: 32px;
+        font-weight: 600;
+        letter-spacing: -0.02em;
+        line-height: 1.25;
+        color: #fff;
+        margin-bottom: 12px;
+      }
+      .subtitle {
+        font-size: 16px;
+        color: var(--text-secondary);
+        max-width: 680px;
+      }
+      section {
+        margin-bottom: 56px;
+      }
+      h2 {
+        font-size: 20px;
+        font-weight: 600;
+        letter-spacing: -0.01em;
+        color: #fff;
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      h2::before {
+        content: '#';
+        color: var(--accent);
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 18px;
+      }
+      h3 {
+        font-size: 16px;
+        font-weight: 600;
+        color: #e5e5e5;
+        margin: 24px 0 10px;
+      }
+      p {
+        color: var(--text-secondary);
+        margin-bottom: 16px;
+      }
+      .card {
+        background: var(--bg-card);
+        border: 1px solid var(--border-subtle);
+        border-radius: 12px;
+        padding: 24px;
+        margin-bottom: 24px;
+      }
+      .example-card {
+        background: #0f0f0f;
+        border: 1px solid rgba(255, 102, 0, 0.25);
+        border-radius: 10px;
+        padding: 20px;
+        margin: 18px 0;
+      }
+      .example-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 12px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid var(--border-subtle);
+      }
+      .badge {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 11px;
+        background: rgba(255, 102, 0, 0.15);
+        color: var(--accent);
+        padding: 3px 8px;
+        border-radius: 4px;
+        font-weight: 500;
+      }
+      ul, ol {
+        margin-left: 20px;
+        margin-bottom: 18px;
+        color: var(--text-secondary);
+      }
+      li {
+        margin-bottom: 8px;
+      }
+      code {
+        font-family: 'JetBrains Mono', monospace;
+        background: #181818;
+        color: #f0f0f0;
+        font-size: 12.5px;
+        padding: 2px 6px;
+        border-radius: 4px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+      }
+      pre {
+        background: #121212;
+        border: 1px solid var(--border-subtle);
+        padding: 16px;
+        border-radius: 8px;
+        overflow-x: auto;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 12px;
+        color: #d8d8d8;
+        margin: 14px 0;
+        line-height: 1.6;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+        font-size: 13.5px;
+        font-family: 'JetBrains Mono', monospace;
+      }
+      th {
+        text-align: left;
+        padding: 10px 14px;
+        background: #141414;
+        color: #fff;
+        border-bottom: 1px solid var(--border-subtle);
+        font-weight: 500;
+      }
+      td {
+        padding: 10px 14px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        color: #a8a8a8;
+      }
+      tr:hover td {
+        background: rgba(255, 255, 255, 0.02);
+      }
+      .feature-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 16px;
+        margin: 20px 0;
+      }
+      .feature-box {
+        background: #0f0f0f;
+        border: 1px solid var(--border-subtle);
+        border-radius: 8px;
+        padding: 18px;
+      }
+      .feature-title {
+        font-size: 14px;
+        font-weight: 600;
+        color: #fff;
+        margin-bottom: 6px;
+      }
+      .feature-desc {
+        font-size: 12.5px;
+        color: #888;
+        line-height: 1.5;
+        margin: 0;
+      }
+      footer {
+        border-top: 1px solid var(--border-subtle);
+        padding-top: 32px;
+        font-size: 12px;
+        color: var(--text-muted);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: gap;
+        gap: 16px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <!-- Header -->
+      <header>
+        <div class="logo-bar">
+          <a href="/" class="brand">
+            <div class="brand-box">Y</div>
+            <div>
+              <span class="brand-title">Hacker News</span>
+              <span class="brand-by">by PG</span>
+            </div>
+          </a>
+          <a href="/" class="back-btn">← Back to Feed</a>
+        </div>
+        <h1>Platform & Customization Guide</h1>
+        <p class="subtitle">
+          An architectural and operational handbook for Hacker News by PG — engineered with extreme breathing room, OLED true black comfort, discussion signal tools, and zero server-side infrastructure.
+        </p>
+      </header>
+
+      <!-- Section 1: Architecture -->
+      <section>
+        <h2>How the Platform Works</h2>
+        <p>
+          Hacker News by PG operates on a <strong>100% serverless, client-first architecture</strong>. There is no custom backend server collecting telemetry or storing sessions. All state resides on your device.
+        </p>
+        <div class="feature-grid">
+          <div class="feature-box">
+            <div class="feature-title font-mono">Firebase Real-Time API</div>
+            <p class="feature-desc">Connects to official Hacker News endpoints for instant top, new, best, and deeply nested comment hierarchies.</p>
+          </div>
+          <div class="feature-box">
+            <div class="feature-title font-mono">Algolia HN Index</div>
+            <p class="feature-desc">Powers instant full-text search, historic past editions, and multi-keyword custom channel queries in under 50ms.</p>
+          </div>
+          <div class="feature-box">
+            <div class="feature-title font-mono">IndexedDB + PWA Storage</div>
+            <p class="feature-desc">Custom channels, bookmarked stories, and negative mute rules persist on-device via IndexedDB with offline caching.</p>
+          </div>
+          <div class="feature-box">
+            <div class="feature-title font-mono">Direct URL Fidelity</div>
+            <p class="feature-desc">Links directly to original publisher sites without fragile proxy scrapers, preserving original formatting.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 2: Channel Feeds -->
+      <section>
+        <h2>Original & Curated Channels</h2>
+        <p>
+          The top horizontal pill bar gives you instant access to standard Hacker News categories as well as curated engineering feeds:
+        </p>
+        <table>
+          <thead>
+            <tr>
+              <th>Channel</th>
+              <th>Data Source</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>#top</code></td>
+              <td>Firebase /topstories</td>
+              <td>Current front-page stories curated by community votes</td>
+            </tr>
+            <tr>
+              <td><code>#new</code></td>
+              <td>Firebase /newstories</td>
+              <td>Real-time latest submissions as they are posted</td>
+            </tr>
+            <tr>
+              <td><code>#past</code></td>
+              <td>Algolia /numericFilters</td>
+              <td>Top front-page highlights from the previous days</td>
+            </tr>
+            <tr>
+              <td><code>#best</code></td>
+              <td>Firebase /beststories</td>
+              <td>Highest scored stories of all time</td>
+            </tr>
+            <tr>
+              <td><code>#ask</code></td>
+              <td>Firebase /askstories</td>
+              <td>Ask HN questions and community answers</td>
+            </tr>
+            <tr>
+              <td><code>#show</code></td>
+              <td>Firebase /showstories</td>
+              <td>Show HN launches, open source tools, and side projects</td>
+            </tr>
+            <tr>
+              <td><code>#jobs</code></td>
+              <td>Firebase /jobstories</td>
+              <td>Who is hiring and startup job opportunities</td>
+            </tr>
+            <tr>
+              <td><code>#systems</code></td>
+              <td>Algolia Curated</td>
+              <td>Operating systems, compilers, databases, Rust, Linux, architecture</td>
+            </tr>
+            <tr>
+              <td><code>#essays</code></td>
+              <td>Algolia Curated</td>
+              <td>Long-form essays, retrospectives, philosophy, Paul Graham essays</td>
+            </tr>
+            <tr>
+              <td><code>#saved</code></td>
+              <td>Local IndexedDB</td>
+              <td>Your offline bookmarks saved on device</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- Section 3: Custom Channels & Filters -->
+      <section>
+        <h2>Creating Custom Channel Filters</h2>
+        <p>
+          You can create personalized channels that continuously pull stories from across the entire Hacker News universe based on your exact interests.
+        </p>
+        <p>
+          Click the <code>[+] New</code> button in the channel bar or the settings modal to open the filter builder.
+        </p>
+
+        <h3>Concrete Examples</h3>
+
+        <!-- Example 1 -->
+        <div class="example-card">
+          <div class="example-header">
+            <span class="font-mono" style="color: #fff; font-weight: 600;">Example 1: Artificial Intelligence & LLM Feed</span>
+            <span class="badge">Topic Filter</span>
+          </div>
+          <p style="font-size: 13.5px; margin-bottom: 8px;">
+            Filter stories specifically discussing artificial intelligence, foundation models, and transformers:
+          </p>
+          <ul style="font-size: 13px; margin-bottom: 0;">
+            <li><strong>Channel Name:</strong> <code>#ai</code></li>
+            <li><strong>Keywords:</strong> <code>ai, llm, gpt, claude, transformer, machine learning</code></li>
+            <li><strong>Domains:</strong> <code>arxiv.org, huggingface.co</code> (optional)</li>
+            <li><strong>Min Score:</strong> <code>50</code></li>
+          </ul>
+        </div>
+
+        <!-- Example 2 -->
+        <div class="example-card">
+          <div class="example-header">
+            <span class="font-mono" style="color: #fff; font-weight: 600;">Example 2: Systems Programming & Rust</span>
+            <span class="badge">Language / OS</span>
+          </div>
+          <p style="font-size: 13.5px; margin-bottom: 8px;">
+            Filter stories about memory safety, compilers, and low-level engineering:
+          </p>
+          <ul style="font-size: 13px; margin-bottom: 0;">
+            <li><strong>Channel Name:</strong> <code>#rust</code></li>
+            <li><strong>Keywords:</strong> <code>rust, cargo, crates.io, memory safety, llvm</code></li>
+            <li><strong>Domains:</strong> <code>github.com, rust-lang.org</code></li>
+            <li><strong>Min Score:</strong> <code>0</code> (show all)</li>
+          </ul>
+        </div>
+
+        <!-- Example 3 -->
+        <div class="example-card">
+          <div class="example-header">
+            <span class="font-mono" style="color: #fff; font-weight: 600;">Example 3: High-Signal Top Gems</span>
+            <span class="badge">Score Filter</span>
+          </div>
+          <p style="font-size: 13.5px; margin-bottom: 8px;">
+            Only see generational, viral stories that achieve massive community traction:
+          </p>
+          <ul style="font-size: 13px; margin-bottom: 0;">
+            <li><strong>Channel Name:</strong> <code>#gems</code></li>
+            <li><strong>Keywords:</strong> <em>(leave blank to search all topics)</em></li>
+            <li><strong>Domains:</strong> <em>(leave blank)</em></li>
+            <li><strong>Min Score:</strong> <code>400</code></li>
+          </ul>
+        </div>
+
+        <div class="card" style="margin-top: 24px;">
+          <h3 style="margin-top: 0;">💡 Automatic Keyword Inference</h3>
+          <p style="font-size: 13.5px; margin-bottom: 0;">
+            If you create a channel named <code>#security</code>, <code>#apple</code>, or <code>#python</code> and leave the Keywords field blank, the platform automatically infers the tag name as the search keyword. You don't need to re-type it manually!
+          </p>
+        </div>
+      </section>
+
+      <!-- Section 4: Discussion Signal Tools -->
+      <section>
+        <h2>Discussion Signal Suite</h2>
+        <p>
+          Hacker News discussions are where the real value lies. We designed custom ergonomic tools to navigate deep comment trees without losing your place:
+        </p>
+        <div class="feature-grid">
+          <div class="feature-box">
+            <div class="feature-title font-mono">Chromatic 2px Guide Rails</div>
+            <p class="feature-desc">Vertical indent lines tinted by depth (white, sky blue, emerald, purple). Clicking any rail folds the entire branch into an inline count.</p>
+          </div>
+          <div class="feature-box">
+            <div class="feature-title font-mono">OP Stepper</div>
+            <p class="feature-desc">The floating <code>▲ 1 of X ▼</code> widget jumps straight to replies written by the original poster with smooth scrolling and highlight.</p>
+          </div>
+          <div class="feature-box">
+            <div class="feature-title font-mono">Thread Link Drawer</div>
+            <p class="feature-desc">Clicking "Links" opens a drawer listing every external hyperlink referenced across the entire comment thread with context snippets.</p>
+          </div>
+          <div class="feature-box">
+            <div class="feature-title font-mono">Fold-to-Root</div>
+            <p class="feature-desc">Single toggle in the discussion bar that collapses all nested replies, allowing you to review only top-level root perspectives.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 5: Negative Filtering -->
+      <section>
+        <h2>Negative Filtering & Mute Lists</h2>
+        <p>
+          Tired of recurring topics, paywalls, or noisy authors? The platform includes a 100% on-device negative filter.
+        </p>
+        <ol>
+          <li>Click the <strong>Settings</strong> icon in the top right.</li>
+          <li>Under <strong>Negative Filtering</strong>, add any keywords (e.g. <code>crypto</code>, <code>election</code>), domains (e.g. <code>paywall.com</code>), or author usernames.</li>
+          <li>Matching stories will be filtered immediately before rendering, and a discreet banner will inform you how many stories were muted.</li>
+        </ol>
+      </section>
+
+      <!-- Section 6: Keyboard Shortcuts -->
+      <section>
+        <h2>Desktop Keyboard Shortcuts</h2>
+        <p>
+          Navigate the entire application without touching your mouse:
+        </p>
+        <table>
+          <thead>
+            <tr>
+              <th>Key</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>j</code></td>
+              <td>Move to next story in feed</td>
+            </tr>
+            <tr>
+              <td><code>k</code></td>
+              <td>Move to previous story in feed</td>
+            </tr>
+            <tr>
+              <td><code>o</code></td>
+              <td>Open original article URL in new tab</td>
+            </tr>
+            <tr>
+              <td><code>c</code></td>
+              <td>Open story discussion / comments</td>
+            </tr>
+            <tr>
+              <td><code>r</code></td>
+              <td>Open direct page preview tab</td>
+            </tr>
+            <tr>
+              <td><code>/</code></td>
+              <td>Open instant full-text search</td>
+            </tr>
+            <tr>
+              <td><code>f</code></td>
+              <td>Toggle Fold-to-Root in active thread</td>
+            </tr>
+            <tr>
+              <td><code>Esc</code></td>
+              <td>Dismiss open dialogs or link drawer</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- Footer -->
+      <footer>
+        <div>
+          <span>Hacker News by PG</span> · Zero backend · Made by Prashant
+        </div>
+        <div>
+          <a href="/" class="back-btn">Open App →</a>
+        </div>
+      </footer>
+    </div>
+    <!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "3a8f84fcbdd5440199614241273e160e"}'></script><!-- End Cloudflare Web Analytics -->
+  </body>
+</html>

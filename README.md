@@ -2,6 +2,10 @@
 
 > A minimalist, high-signal, high-breathing-room Hacker News OLED PWA with zero runtime backend, inspired by Paul Graham's original vision.
 
+🌐 **Live Demo:** [https://hackernewsbypg.netlify.app/](https://hackernewsbypg.netlify.app/)  
+📖 **Guide:** [https://hackernewsbypg.netlify.app/guide.html](https://hackernewsbypg.netlify.app/guide.html)  
+👨‍💻 **Author:** Prashant ([@Prashantispacific](https://github.com/Prashantispacific))
+
 Built with **React 19**, **TypeScript**, **Tailwind CSS v4**, and **Vite 6**.
 
 ---

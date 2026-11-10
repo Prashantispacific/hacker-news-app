@@ -1,0 +1,210 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --bg-base: #000000;
+    --bg-surface: #0a0a0a;
+    --bg-card: #0e0e0e;
+    --bg-elevated: #151515;
+    --border-subtle: rgba(255, 255, 255, 0.08);
+    --border-hover: rgba(255, 255, 255, 0.22);
+    --rail-color: rgba(255, 255, 255, 0.09);
+    --rail-hover: #ff6600;
+    --text-primary: #ededed;
+    --text-secondary: #909090;
+    --text-muted: #555555;
+    --accent: #ff6600;
+    --accent-subtle: rgba(255, 102, 0, 0.12);
+  }
+
+  .true-black {
+    --bg-base: #000000;
+    --bg-surface: #040404;
+    --bg-card: #080808;
+  }
+
+  .warm-reading {
+    --text-primary: #f0e6d2;
+    --text-secondary: #b5a995;
+    --bg-base: #0d0c0a;
+    --bg-surface: #141310;
+  }
+
+  * {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background-color: var(--bg-base);
+    color: var(--text-primary);
+    font-family: 'Geist', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    min-height: 100vh;
+    min-height: 100dvh;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  #root {
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--bg-base);
+  }
+}
+
+/* Custom minimal scrollbar */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.14);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* Hide scrollbar utility for clean pill channels */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Typography styles */
+.font-mono-meta {
+  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+.font-editorial {
+  font-family: 'Newsreader', Georgia, Cambria, 'Times New Roman', serif;
+  line-height: 1.82;
+  letter-spacing: 0.015em;
+}
+.font-geist {
+  font-family: 'Geist', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  letter-spacing: -0.008em;
+  line-height: 1.74;
+}
+.font-jakarta {
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  letter-spacing: -0.005em;
+  line-height: 1.75;
+}
+.font-inter {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  letter-spacing: 0;
+  line-height: 1.72;
+}
+
+/* Comment content simple, readable typography */
+.comment-content {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  color: #d6d6d6;
+  line-height: 1.68;
+  word-break: break-word;
+}
+.comment-content p {
+  margin-top: 0.65rem;
+  margin-bottom: 0.65rem;
+}
+.comment-content p:first-child {
+  margin-top: 0;
+}
+.comment-content p:last-child {
+  margin-bottom: 0;
+}
+.comment-content a {
+  color: #6cb6ff;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  word-break: break-all;
+}
+.comment-content a:hover {
+  color: #93c5fd;
+}
+.comment-content blockquote {
+  margin: 0.6rem 0;
+  padding-left: 0.75rem;
+  border-left: 2px solid rgba(255, 255, 255, 0.18);
+  color: #8e8e8e;
+  font-style: italic;
+}
+.comment-content code:not(pre code) {
+  background: rgba(255, 255, 255, 0.08);
+  padding: 0.1rem 0.35rem;
+  border-radius: 3px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.88em;
+  color: #e0e0e0;
+}
+.comment-content pre {
+  margin: 0.75rem 0;
+  padding: 0.75rem 1rem;
+  background: #111111;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  overflow-x: auto;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: #e0e0e0;
+  line-height: 1.6;
+}
+
+/* Shimmer pulse animation */
+@keyframes void-pulse {
+  0%, 100% {
+    opacity: 0.15;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+.animate-void-pulse {
+  animation: void-pulse 1.8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.touch-pan-y {
+  touch-action: pan-y;
+}
+.touch-pan-x {
+  touch-action: pan-x;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Suppress Netlify collaborative preview drawer, badge, and feedback widgets */
+netlify-drawer,
+#netlify-drawer,
+.netlify-drawer,
+[data-netlify-deploy-id],
+.netlify-feedback-drawer,
+div[class*="netlify-drawer"],
+div[id*="netlify-drawer"],
+div[class*="netlify-feedback"],
+iframe[src*="netlify"],
+iframe[id*="netlify"],
+#netlify-identity-widget,
+.netlify-badge {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  z-index: -9999 !important;
+  width: 0 !important;
+  height: 0 !important;
+  position: absolute !important;
+  left: -9999px !important;
+  top: -9999px !important;
+}

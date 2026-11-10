@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=5.0" />
+    
+    <!-- Primary Meta Tags -->
+    <title>Hacker News by PG</title>
+    <meta name="title" content="Hacker News by PG" />
+    <meta name="description" content="A minimalist, high-signal Hacker News client designed with extreme breathing room, OLED true black comfort, discussion signal tools, and zero server-side infrastructure. Inspired by Paul Graham's original vision." />
+    <meta name="keywords" content="Hacker News, HN, Paul Graham, PG, Y Combinator, tech news, startups, programming, engineering, minimal reader, OLED dark mode, PWA" />
+    <meta name="author" content="Paul Graham / Y Combinator" />
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+    <meta name="google-site-verification" content="tPq1m-nB2Mgd5CxCny4RQx5ugWn5Z2VSGdkLoqYMDPE" />
+    <link rel="canonical" href="https://hackernewsbypg.netlify.app/" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://hackernewsbypg.netlify.app/" />
+    <meta property="og:site_name" content="Hacker News by PG" />
+    <meta property="og:title" content="Hacker News by PG" />
+    <meta property="og:description" content="Minimalist, high-breathing-room Hacker News client. Pure OLED black, OP Stepper, Link Drawer, and deterministic channel filters." />
+    <meta property="og:image" content="https://hackernewsbypg.netlify.app/pwa-512x512.png" />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://hackernewsbypg.netlify.app/" />
+    <meta property="twitter:title" content="Hacker News by PG" />
+    <meta property="twitter:description" content="Minimalist, high-breathing-room Hacker News client. Pure OLED black, OP Stepper, Link Drawer, and deterministic channel filters." />
+    <meta property="twitter:image" content="https://hackernewsbypg.netlify.app/pwa-512x512.png" />
+
+    <!-- Mobile & PWA Theme -->
+    <meta name="theme-color" content="#000000" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="HN by PG" />
+    <meta name="application-name" content="Hacker News by PG" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="apple-touch-icon" sizes="192x192" href="/pwa-192x192.png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+
+    <!-- Preconnect & Typography Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400;1,6..72,500&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+
+    <!-- JSON-LD Structured Data Schema for SEO -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Hacker News by PG",
+        "url": "https://hackernewsbypg.netlify.app/",
+        "applicationCategory": "NewsApplication",
+        "operatingSystem": "All",
+        "description": "Minimalist, high-breathing-room Hacker News client with discussion signal tools, channel filters, and zero backend.",
+        "creator": {
+          "@type": "Person",
+          "name": "Paul Graham"
+        },
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        }
+      }
+    </script>
+
+    <!-- Suppress Netlify feedback badge / preview drawer -->
+    <script>
+      window.__NETLIFY_FEEDBACK_DISABLED__ = true;
+      window.__NETLIFY_PREVIEW_DRAWER_DISABLED__ = true;
+      try {
+        const observer = new MutationObserver(function(mutations) {
+          for (var i = 0; i < mutations.length; i++) {
+            var added = mutations[i].addedNodes;
+            for (var j = 0; j < added.length; j++) {
+              var node = added[j];
+              if (node.nodeType === 1) {
+                var name = (node.tagName || '').toLowerCase();
+                if (name.indexOf('netlify') !== -1 || (node.id && node.id.indexOf('netlify') !== -1)) {
+                  node.remove();
+                }
+              }
+            }
+          }
+        });
+        observer.observe(document.documentElement, { childList: true, subtree: true });
+      } catch (e) {}
+    </script>
+  </head>
+  <body class="bg-black text-[#e8e8e8] antialiased selection:bg-[#ff6600]/30 selection:text-white">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+    <!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "3a8f84fcbdd5440199614241273e160e"}'></script><!-- End Cloudflare Web Analytics -->
+  </body>
+</html>
