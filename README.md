@@ -14,6 +14,11 @@
 [![Platform](https://img.shields.io/badge/Platform-Android_8.0+-3DDC84?logo=android&logoColor=white)](https://developer.android.com/)
 [![License](https://img.shields.io/badge/License-MIT-orange.svg)](LICENSE)
 
+<br />
+
+🌐 **Live Web App (PWA):** [https://hackernewsbypg.netlify.app/](https://hackernewsbypg.netlify.app/)  
+📱 **Android Release (APK):** [v1.0.0 Releases](https://github.com/Prashantispacific/hacker-news-app/releases/tag/v1.0.0)
+
 </div>
 
 ---
@@ -36,6 +41,8 @@
   - 100% on-device negative filtering (mute keywords, domains, and authors).
 - **Official Legal & Developer Hub**:
   - In-app Terms of Service, Privacy Policy, and developer contact options under the Settings modal.
+- **Web App & PWA Edition**:
+  - In addition to this native Android client, the app is also live as an installable Progressive Web App (PWA) at [https://hackernewsbypg.netlify.app/](https://hackernewsbypg.netlify.app/).
 
 ---
 

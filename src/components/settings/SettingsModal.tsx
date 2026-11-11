@@ -14,6 +14,7 @@ import {
   Shield,
   FileText,
   Info,
+  Globe,
 } from 'lucide-react'
 
 const GithubIcon = ({ className = 'w-3 h-3' }: { className?: string }) => (
@@ -554,7 +555,14 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 </p>
               </div>
 
-              <div className="pt-1">
+              <div className="pt-1 flex flex-col gap-2">
+                <button
+                  onClick={() => openExternalUrl('https://hackernewsbypg.netlify.app/')}
+                  className="w-full py-2 bg-[#1a1a1a] hover:bg-[#252525] border border-white/[0.1] text-[#ff6600] font-medium rounded-lg text-xs flex items-center justify-center gap-2 transition-colors cursor-pointer"
+                >
+                  <Globe className="w-3.5 h-3.5" />
+                  <span>Launch Web App (PWA) ↗</span>
+                </button>
                 <button
                   onClick={() => openExternalUrl('https://github.com/Prashantispacific/hacker-news-app/issues')}
                   className="w-full py-2.5 bg-white text-black hover:bg-[#eaeaea] font-medium rounded-lg text-xs flex items-center justify-center gap-2 transition-colors cursor-pointer"
