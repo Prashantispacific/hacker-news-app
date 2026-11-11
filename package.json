@@ -1,16 +1,25 @@
 {
-  "name": "hacker-news-by-pg",
+  "name": "hn-by-pg-android",
   "private": true,
   "version": "1.0.0",
-  "description": "Ultra-minimalist, high-signal, zero-backend Hacker News PWA inspired by Paul Graham.",
+  "description": "Ultra-minimalist, high-signal, high-performance modern Android application for Hacker News inspired by Paul Graham.",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "oxlint",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "cap:sync": "cap sync android",
+    "android:build": "npm run build && cap sync android && cd android && .\\gradlew.bat assembleDebug && cd ..",
+    "android:install": "adb install -r android/app/build/outputs/apk/debug/app-debug.apk"
   },
   "dependencies": {
+    "@capacitor/android": "^8.6.0",
+    "@capacitor/app": "^8.1.2",
+    "@capacitor/browser": "^8.0.5",
+    "@capacitor/clipboard": "^8.0.1",
+    "@capacitor/core": "^8.6.0",
+    "@capacitor/status-bar": "^8.0.4",
     "clsx": "^2.1.1",
     "idb-keyval": "^6.3.0",
     "lucide-react": "^1.71.0",
@@ -19,6 +28,7 @@
     "tailwind-merge": "^3.7.0"
   },
   "devDependencies": {
+    "@capacitor/cli": "^8.6.0",
     "@tailwindcss/vite": "^4.3.5",
     "@types/node": "^24.19.2",
     "@types/react": "^19.3.0",

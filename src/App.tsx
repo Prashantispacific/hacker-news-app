@@ -1,4 +1,7 @@
 import { useState, useCallback, useMemo, useEffect } from 'react'
+import { Capacitor } from '@capacitor/core'
+import { App as CapApp } from '@capacitor/app'
+import { StatusBar, Style } from '@capacitor/status-bar'
 import type { Story, ActiveTab, ReaderPreferences } from './types'
 import { useChannels } from './hooks/useChannels'
 import { useMuteList } from './hooks/useMuteList'
@@ -10,6 +13,7 @@ import { useKeyboard } from './hooks/useKeyboard'
 import { useSwipe } from './hooks/useSwipe'
 import { getReaderPreferences, saveReaderPreferences } from './services/storage'
 import { DEFAULT_READER_PREFS } from './config/constants'
+import { fetchItem } from './services/hnFirebase'
 
 import { Header } from './components/common/Header'
 import { ChannelBar } from './components/channels/ChannelBar'
@@ -72,6 +76,43 @@ export function App() {
     getReaderPreferences().then(setPrefs)
   }, [])
 
+  // Native Android Status Bar & Back Button Integration
+  useEffect(() => {
+    if (!Capacitor.isNativePlatform()) return
+
+    StatusBar.setStyle({ style: Style.Dark }).catch(() => {})
+    StatusBar.setBackgroundColor({ color: prefs.trueBlack ? '#000000' : '#0a0a0a' }).catch(() => {})
+    StatusBar.setOverlaysWebView({ overlay: false }).catch(() => {})
+  }, [prefs.trueBlack])
+
+  useEffect(() => {
+    if (!Capacitor.isNativePlatform()) return
+
+    const backListener = CapApp.addListener('backButton', () => {
+      if (isSearchOpen) {
+        setIsSearchOpen(false)
+        return
+      }
+      if (isSettingsOpen) {
+        setIsSettingsOpen(false)
+        return
+      }
+      if (isAddChannelOpen) {
+        setIsAddChannelOpen(false)
+        return
+      }
+      if (activeTab !== 'feed') {
+        setActiveTab('feed')
+        return
+      }
+      CapApp.exitApp()
+    })
+
+    return () => {
+      backListener.then((sub) => sub.remove())
+    }
+  }, [isSearchOpen, isSettingsOpen, isAddChannelOpen, activeTab])
+
   const updatePrefs = (updater: (prev: ReaderPreferences) => ReaderPreferences) => {
     setPrefs((prev) => {
       const next = updater(prev)
@@ -102,6 +143,47 @@ export function App() {
     },
     [markAsRead]
   )
+
+  // Supported Links & Deep Linking (e.g. news.ycombinator.com/item?id=12345)
+  useEffect(() => {
+    if (!Capacitor.isNativePlatform()) return
+
+    const handleDeepLinkUrl = async (urlStr: string) => {
+      if (!urlStr) return
+      try {
+        const idMatch = urlStr.match(/[?&]id=(\d+)/)
+        if (idMatch && idMatch[1]) {
+          const storyId = parseInt(idMatch[1], 10)
+          const item = await fetchItem(storyId)
+          if (item && item.title) {
+            handleSelectStory(item as Story, 'thread')
+          }
+        } else if (urlStr.includes('news.ycombinator.com')) {
+          setActiveTab('feed')
+        }
+      } catch (err) {
+        console.error('Failed to handle deep link URL:', err)
+      }
+    }
+
+    // Check cold launch URL
+    CapApp.getLaunchUrl().then((launchUrl) => {
+      if (launchUrl?.url) {
+        handleDeepLinkUrl(launchUrl.url)
+      }
+    }).catch(() => {})
+
+    // Listen for runtime URL open events (from browser, messaging apps, etc.)
+    const urlListener = CapApp.addListener('appUrlOpen', (event) => {
+      if (event?.url) {
+        handleDeepLinkUrl(event.url)
+      }
+    })
+
+    return () => {
+      urlListener.then((sub) => sub.remove())
+    }
+  }, [handleSelectStory])
 
   // Mobile swipe gestures
   useSwipe({

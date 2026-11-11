@@ -11,9 +11,20 @@ import {
   ExternalLink,
   Sparkles,
   Smartphone,
+  Shield,
+  FileText,
+  Info,
 } from 'lucide-react'
+
+const GithubIcon = ({ className = 'w-3 h-3' }: { className?: string }) => (
+  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4" />
+    <path d="M9 18c-4.51 2-5-2-7-2" />
+  </svg>
+)
 import type { MuteRules, ReaderPreferences } from '../../types'
 import { usePwaInstall } from '../../hooks/usePwaInstall'
+import { openExternalUrl } from '../../utils/browser'
 
 interface SettingsModalProps {
   isOpen: boolean
@@ -38,7 +49,9 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   onUpdatePrefs,
   onExportData,
 }) => {
-  const [activeTab, setActiveTab] = useState<'mute' | 'display' | 'shortcuts' | 'guide'>('mute')
+  const [activeTab, setActiveTab] = useState<
+    'mute' | 'display' | 'privacy' | 'terms' | 'about' | 'shortcuts' | 'guide'
+  >('mute')
   const [keywordInput, setKeywordInput] = useState('')
   const [domainInput, setDomainInput] = useState('')
   const [authorInput, setAuthorInput] = useState('')
@@ -71,10 +84,16 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-150">
-      <div className="w-full max-w-xl bg-[#0a0a0a] border border-white/[0.12] rounded-xl overflow-hidden shadow-2xl flex flex-col max-h-[85vh]">
+    <div
+      onClick={onClose}
+      className="fixed inset-0 z-50 flex items-center justify-center px-3 sm:px-4 pt-[max(1rem,calc(env(safe-area-inset-top,0px)+0.75rem))] pb-[max(1rem,env(safe-area-inset-bottom,0px))] bg-black/85 backdrop-blur-md animate-in fade-in duration-150"
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="w-full max-w-xl bg-[#0a0a0a] border border-white/[0.12] rounded-xl overflow-hidden shadow-2xl flex flex-col max-h-[85vh]"
+      >
         {/* Header with Direct Guide Button */}
-        <div className="flex items-center justify-between px-5 py-3.5 border-b border-white/[0.08] bg-[#111111]">
+        <div className="flex items-center justify-between px-4 sm:px-5 py-3 border-b border-white/[0.08] bg-[#111111]">
           <h2 className="text-sm font-mono-meta font-medium text-white tracking-wide uppercase">
             Preferences & Settings
           </h2>
@@ -91,8 +110,10 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               <span>Platform Guide ↗</span>
             </a>
             <button
+              type="button"
               onClick={onClose}
-              className="text-[#666666] hover:text-white p-1 rounded cursor-pointer"
+              aria-label="Close settings"
+              className="w-8 h-8 rounded-full bg-white/[0.08] hover:bg-white/[0.16] active:bg-[#ff6600]/25 text-[#cccccc] hover:text-white flex items-center justify-center transition-colors cursor-pointer shrink-0"
             >
               <X className="w-4 h-4" />
             </button>
@@ -120,6 +141,36 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             }`}
           >
             OLED & Display
+          </button>
+          <button
+            onClick={() => setActiveTab('privacy')}
+            className={`pb-2 px-3 border-b-2 cursor-pointer transition-colors whitespace-nowrap ${
+              activeTab === 'privacy'
+                ? 'border-[#ff6600] text-white font-medium'
+                : 'border-transparent text-[#777777] hover:text-[#cccccc]'
+            }`}
+          >
+            Privacy Policy
+          </button>
+          <button
+            onClick={() => setActiveTab('terms')}
+            className={`pb-2 px-3 border-b-2 cursor-pointer transition-colors whitespace-nowrap ${
+              activeTab === 'terms'
+                ? 'border-[#ff6600] text-white font-medium'
+                : 'border-transparent text-[#777777] hover:text-[#cccccc]'
+            }`}
+          >
+            Terms & Disclaimer
+          </button>
+          <button
+            onClick={() => setActiveTab('about')}
+            className={`pb-2 px-3 border-b-2 cursor-pointer transition-colors whitespace-nowrap ${
+              activeTab === 'about'
+                ? 'border-[#ff6600] text-white font-medium'
+                : 'border-transparent text-[#777777] hover:text-[#cccccc]'
+            }`}
+          >
+            About & Contact
           </button>
           <button
             onClick={() => setActiveTab('shortcuts')}
@@ -336,7 +387,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
               <div className="pt-4 border-t border-white/[0.06]">
                 <h3 className="text-white font-medium mb-1.5">Local Data Management</h3>
                 <p className="text-[#777777] text-[11px] mb-3">
-                  All channels, bookmarks, and mutes are strictly stored on your browser.
+                  All channels, bookmarks, and mutes are strictly stored on your device.
                 </p>
                 <button
                   onClick={onExportData}
@@ -344,6 +395,172 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 >
                   <Download className="w-3.5 h-3.5 text-[#ff6600]" />
                   <span>Export JSON Backup</span>
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* PRIVACY POLICY TAB */}
+          {activeTab === 'privacy' && (
+            <div className="space-y-4 text-xs font-mono-meta leading-relaxed">
+              <div className="flex items-center gap-2 pb-2 border-b border-white/[0.08]">
+                <Shield className="w-4 h-4 text-[#ff6600]" />
+                <h3 className="text-sm font-medium text-white">Privacy Policy</h3>
+                <span className="text-[10px] text-[#666666] ml-auto">Last updated: November 2026</span>
+              </div>
+
+              <div className="p-3.5 bg-[#121212] border border-white/[0.06] rounded-lg space-y-2">
+                <span className="text-white font-medium block">1. Strict Zero Data Collection</span>
+                <p className="text-[#888888]">
+                  HN by PG is built with a strict privacy-first architecture. We do not require account registration, collect personal information, or track your reading habits. There are zero advertising trackers, analytics SDKs, or device fingerprinting embedded in this app.
+                </p>
+              </div>
+
+              <div className="p-3.5 bg-[#121212] border border-white/[0.06] rounded-lg space-y-2">
+                <span className="text-white font-medium block">2. Direct API Communication</span>
+                <p className="text-[#888888]">
+                  All story feeds, comments, and search queries communicate directly from your device to the official open Hacker News Firebase API (<code className="text-[#6cb6ff]">hacker-news.firebaseio.com</code>) and Algolia search API. There is no intermediate custom server logging your requests.
+                </p>
+              </div>
+
+              <div className="p-3.5 bg-[#121212] border border-white/[0.06] rounded-lg space-y-2">
+                <span className="text-white font-medium block">3. 100% On-Device Local Storage</span>
+                <p className="text-[#888888]">
+                  Your bookmarks, custom channel rules, negative filtering (mute lists), read state, and display preferences remain strictly on your local device storage (IndexedDB & LocalStorage). This data is never uploaded, synced to an external database, or transmitted to any third party.
+                </p>
+              </div>
+
+              <div className="p-3.5 bg-[#121212] border border-white/[0.06] rounded-lg space-y-2">
+                <span className="text-white font-medium block">4. External Web Links</span>
+                <p className="text-[#888888]">
+                  When you tap links to read external articles or view websites via in-app browser tabs, you are visiting third-party sites that operate under their own independent privacy policies.
+                </p>
+              </div>
+
+              <div className="p-3.5 bg-[#141414] border border-[#ff6600]/20 rounded-lg flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                  <span className="text-white font-medium block">Privacy Questions?</span>
+                  <span className="text-[#777777] text-[11px]">Open an issue or inquiry on GitHub:</span>
+                </div>
+                <button
+                  onClick={() => openExternalUrl('https://github.com/Prashantispacific/hacker-news-app/issues')}
+                  className="px-3 py-1.5 bg-[#1f1f1f] hover:bg-[#2a2a2a] border border-white/[0.1] rounded text-[#ff6600] text-[11px] flex items-center gap-1.5 shrink-0 transition-colors cursor-pointer"
+                >
+                  <GithubIcon className="w-3 h-3" />
+                  <span>GitHub Issues</span>
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* TERMS OF SERVICE & DISCLAIMER TAB */}
+          {activeTab === 'terms' && (
+            <div className="space-y-4 text-xs font-mono-meta leading-relaxed">
+              <div className="flex items-center gap-2 pb-2 border-b border-white/[0.08]">
+                <FileText className="w-4 h-4 text-[#ff6600]" />
+                <h3 className="text-sm font-medium text-white">Terms & Disclaimer</h3>
+                <span className="text-[10px] text-[#666666] ml-auto">Version 1.0</span>
+              </div>
+
+              <div className="p-3.5 bg-[#121212] border border-white/[0.06] rounded-lg space-y-2">
+                <span className="text-white font-medium block">1. Unofficial Client & Wrapper Statement</span>
+                <p className="text-[#888888]">
+                  <strong className="text-white">HN by PG</strong> is an independent, unofficial client application built to deliver an elevated, OLED-first reading experience for Hacker News. Think of this application as the classic Hacker News in "new and better clothes" — zero server middleware, pure front-end craftsmanship, and high signal-to-noise discussion tools.
+                </p>
+              </div>
+
+              <div className="p-3.5 bg-[#121212] border border-white/[0.06] rounded-lg space-y-2">
+                <span className="text-white font-medium block">2. Trademark & Content Attribution</span>
+                <p className="text-[#888888]">
+                  "Hacker News" and the original Y Combinator trademarks are the intellectual property of Y Combinator LLC. This app is not affiliated with, endorsed by, or sponsored by Y Combinator or Paul Graham. All article links, headlines, comments, and discussion content originate from the community of news.ycombinator.com via its public API.
+                </p>
+              </div>
+
+              <div className="p-3.5 bg-[#121212] border border-white/[0.06] rounded-lg space-y-2">
+                <span className="text-white font-medium block">3. User-Generated Content Disclaimer</span>
+                <p className="text-[#888888]">
+                  Content presented in story discussions is generated by independent users on Hacker News. We do not edit, moderate, or take responsibility for user comments or external linked material.
+                </p>
+              </div>
+
+              <div className="p-3.5 bg-[#121212] border border-white/[0.06] rounded-lg space-y-2">
+                <span className="text-white font-medium block">4. License & "As-Is" Provision</span>
+                <p className="text-[#888888]">
+                  This application is provided free of charge on an "AS IS" and "AS AVAILABLE" basis without warranties of any kind. You agree to use it at your own discretion.
+                </p>
+              </div>
+
+              <div className="p-3.5 bg-[#141414] border border-[#ff6600]/20 rounded-lg flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                  <span className="text-white font-medium block">Legal Inquiries & Feedback</span>
+                  <span className="text-[#777777] text-[11px]">Contact via GitHub repository:</span>
+                </div>
+                <button
+                  onClick={() => openExternalUrl('https://github.com/Prashantispacific/hacker-news-app/issues')}
+                  className="px-3 py-1.5 bg-[#1f1f1f] hover:bg-[#2a2a2a] border border-white/[0.1] rounded text-[#ff6600] text-[11px] flex items-center gap-1.5 shrink-0 transition-colors cursor-pointer"
+                >
+                  <GithubIcon className="w-3 h-3" />
+                  <span>GitHub Issues</span>
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* ABOUT & CONTACT TAB */}
+          {activeTab === 'about' && (
+            <div className="space-y-4 text-xs font-mono-meta leading-relaxed">
+              <div className="flex items-center gap-2 pb-2 border-b border-white/[0.08]">
+                <Info className="w-4 h-4 text-[#ff6600]" />
+                <h3 className="text-sm font-medium text-white">About & Developer</h3>
+                <span className="text-[10px] text-[#ff6600] ml-auto">v1.0.0</span>
+              </div>
+
+              <div className="p-4 bg-[#141414] border border-[#ff6600]/30 rounded-xl space-y-3">
+                <div className="flex items-center gap-3">
+                  <div className="h-8 px-2 bg-[#ff6600] rounded-[4px] flex items-center justify-center font-bold text-sm text-white">
+                    HN
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-medium text-white">HN by PG</h4>
+                    <span className="text-[#888888] text-[11px]">The classic Hacker News in modern OLED attire</span>
+                  </div>
+                </div>
+
+                <p className="text-[#999999] leading-relaxed">
+                  Engineered as an ultra-fast, high-signal, zero-clutter wrapper around Hacker News. Built with real-time progressive comment streaming, guide rails, OP tracking, instant search, and complete on-device privacy.
+                </p>
+
+                <div className="pt-2 border-t border-white/[0.08] flex flex-wrap items-center justify-between gap-3 text-[11px]">
+                  <div>
+                    <span className="text-[#666666] block">Developer</span>
+                    <span className="text-white font-medium">Prashant</span>
+                  </div>
+                  <div>
+                    <span className="text-[#666666] block">GitHub Profile</span>
+                    <button
+                      onClick={() => openExternalUrl('https://github.com/Prashantispacific')}
+                      className="text-[#6cb6ff] hover:underline cursor-pointer"
+                    >
+                      @Prashantispacific
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-3.5 bg-[#121212] border border-white/[0.06] rounded-lg space-y-2 text-[#888888]">
+                <span className="text-white font-medium block">Tech Stack & Open Standards</span>
+                <p>
+                  React 19 · Capacitor 8 · Tailwind CSS v4 · JetBrains Mono & Newsreader Typography · Official Hacker News Firebase API.
+                </p>
+              </div>
+
+              <div className="pt-1">
+                <button
+                  onClick={() => openExternalUrl('https://github.com/Prashantispacific/hacker-news-app/issues')}
+                  className="w-full py-2.5 bg-white text-black hover:bg-[#eaeaea] font-medium rounded-lg text-xs flex items-center justify-center gap-2 transition-colors cursor-pointer"
+                >
+                  <GithubIcon className="w-3.5 h-3.5" />
+                  <span>Report Bug or Feature on GitHub</span>
                 </button>
               </div>
             </div>

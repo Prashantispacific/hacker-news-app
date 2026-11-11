@@ -2,6 +2,7 @@ import React from 'react'
 import { Bookmark, MessageSquare, ExternalLink, Globe } from 'lucide-react'
 import type { Story } from '../../types'
 import { timeAgo, extractDomain } from '../../utils/timeAgo'
+import { openExternalUrl } from '../../utils/browser'
 
 interface StoryItemProps {
   story: Story
@@ -26,8 +27,8 @@ export const StoryItem: React.FC<StoryItemProps> = ({
 
   const handleTitleClick = () => {
     if (story.url) {
-      // Direct navigation to original page URL without proxy breakage
-      window.open(story.url, '_blank', 'noopener,noreferrer')
+      // Direct navigation to original page URL via in-app browser or new tab
+      openExternalUrl(story.url)
       onSelectStory(story, 'thread')
     } else {
       // Self / Ask HN post
@@ -103,15 +104,13 @@ export const StoryItem: React.FC<StoryItemProps> = ({
 
           {/* Direct original URL button */}
           {story.url && (
-            <a
-              href={story.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              title="Open direct URL in new tab"
+            <button
+              onClick={() => openExternalUrl(story.url!)}
+              title="Open direct URL in in-app browser / tab"
               className="p-2 sm:p-1.5 rounded text-[#666666] hover:text-white hover:bg-white/[0.06] transition-all cursor-pointer"
             >
               <ExternalLink className="w-3.5 h-3.5" />
-            </a>
+            </button>
           )}
 
           {/* Bookmark toggle */}

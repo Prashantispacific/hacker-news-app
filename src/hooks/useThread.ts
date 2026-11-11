@@ -25,17 +25,28 @@ export function useThread(story: Story | null) {
     setCollapsedMap(new Set())
     setFoldToRoot(false)
 
-    fetchCommentTree(story.kids, story.by, (count) => {
-      if (isMounted) setLoadedCount(count)
-    }).then((tree) => {
-      if (isMounted) {
-        setComments(tree)
-        setLoading(false)
-      }
-    }).catch((err) => {
-      console.error('Failed to load comment tree:', err)
-      if (isMounted) setLoading(false)
+    fetchCommentTree(story.kids, story.by, {
+      onProgress: (count) => {
+        if (isMounted) setLoadedCount(count)
+      },
+      onTreeUpdate: (tree, count) => {
+        if (isMounted) {
+          setComments(tree)
+          setLoadedCount(count)
+        }
+      },
+      isCancelled: () => !isMounted,
     })
+      .then((tree) => {
+        if (isMounted) {
+          setComments(tree)
+          setLoading(false)
+        }
+      })
+      .catch((err) => {
+        console.error('Failed to load comment tree:', err)
+        if (isMounted) setLoading(false)
+      })
 
     return () => {
       isMounted = false

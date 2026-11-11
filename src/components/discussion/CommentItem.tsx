@@ -107,6 +107,14 @@ export const CommentItem: React.FC<CommentItemProps> = ({
             dangerouslySetInnerHTML={{ __html: formattedHtml }}
           />
 
+          {/* Inline pending reply indicator while fetching subtree */}
+          {comment.isLoadingReplies && (!comment.kids || comment.kids.length === 0) && (
+            <div className="flex items-center gap-2 text-[11px] font-mono-meta text-[#666666] pt-1 select-none">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#ff6600]/80 animate-pulse" />
+              <span>loading replies...</span>
+            </div>
+          )}
+
           {/* Nested Replies with 1px Subtle Guide Rail */}
           {comment.kids && comment.kids.length > 0 && (
             <div

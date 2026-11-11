@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react'
 import { X, ExternalLink, Link2, MessageSquare, Search, Filter } from 'lucide-react'
 import type { ExtractedLink } from '../../types'
+import { openExternalUrl } from '../../utils/browser'
 
 interface LinkDrawerProps {
   isOpen: boolean
@@ -68,21 +69,29 @@ export const LinkDrawer: React.FC<LinkDrawerProps> = ({
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 z-50 flex justify-end bg-black/75 backdrop-blur-sm animate-in fade-in duration-150">
-      <div className="relative w-full max-w-lg h-full bg-[#0a0a0a] border-l border-white/[0.1] p-4 sm:p-5 pb-[max(1.5rem,env(safe-area-inset-bottom))] flex flex-col shadow-2xl">
+    <div
+      onClick={onClose}
+      className="fixed inset-0 z-50 flex justify-end bg-black/80 backdrop-blur-sm animate-in fade-in duration-150"
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="relative w-full max-w-lg h-full bg-[#0a0a0a] border-l border-white/[0.1] px-4 sm:px-6 pt-[max(1.25rem,calc(env(safe-area-inset-top,0px)+1rem))] pb-[max(1.5rem,env(safe-area-inset-bottom,0px))] flex flex-col shadow-2xl"
+      >
         {/* Header */}
-        <div className="flex items-center justify-between pb-3.5 border-b border-white/[0.08]">
-          <div className="flex items-center gap-2">
+        <div className="flex items-center justify-between pb-3.5 border-b border-white/[0.08] shrink-0">
+          <div className="flex items-center gap-2.5">
             <Link2 className="w-4 h-4 text-[#ff6600]" />
             <h2 className="text-sm font-mono-meta font-medium text-white tracking-wide uppercase">
               External Links ({filteredLinks.length}/{links.length})
             </h2>
           </div>
           <button
+            type="button"
             onClick={onClose}
-            className="text-[#777777] hover:text-white p-1 rounded transition-colors cursor-pointer"
+            aria-label="Close external links"
+            className="w-9 h-9 rounded-full bg-white/[0.08] hover:bg-white/[0.16] active:bg-[#ff6600]/25 text-[#cccccc] hover:text-white flex items-center justify-center transition-colors cursor-pointer shrink-0"
           >
-            <X className="w-4 h-4" />
+            <X className="w-5 h-5" />
           </button>
         </div>
 
@@ -152,15 +161,13 @@ export const LinkDrawer: React.FC<LinkDrawerProps> = ({
             filteredLinks.map((item, idx) => (
               <div key={idx} className="pt-3.5 first:pt-0 group">
                 <div className="flex items-start justify-between gap-3">
-                  <a
-                    href={item.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-xs font-medium text-[#6cb6ff] hover:text-[#93c5fd] hover:underline line-clamp-2 break-all flex items-center gap-1.5 leading-relaxed"
+                  <button
+                    onClick={() => openExternalUrl(item.url)}
+                    className="text-left text-xs font-medium text-[#6cb6ff] hover:text-[#93c5fd] hover:underline line-clamp-2 break-all flex items-center gap-1.5 leading-relaxed cursor-pointer"
                   >
                     <span>{item.url}</span>
                     <ExternalLink className="w-3 h-3 shrink-0 opacity-70" />
-                  </a>
+                  </button>
 
                   {onJumpToComment && (
                     <button

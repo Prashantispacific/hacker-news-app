@@ -8,9 +8,11 @@ import {
   Copy,
   Check,
   ArrowLeft,
+  AlertCircle,
 } from 'lucide-react'
 import { extractDomain, timeAgo } from '../../utils/timeAgo'
 import { cleanHnHtml } from '../../utils/textParser'
+import { openExternalUrl, copyToClipboard } from '../../utils/browser'
 
 interface ReaderViewProps {
   story: Story | null
@@ -27,7 +29,7 @@ export const ReaderView: React.FC<ReaderViewProps> = ({
   onOpenThread,
   onBackToFeed,
 }) => {
-  const [copied, setCopied] = useState(false)
+  const [copiedType, setCopiedType] = useState<'hn' | 'article' | null>(null)
   const [showComfortPanel, setShowComfortPanel] = useState(false)
   const [iframeError, setIframeError] = useState(false)
 
@@ -50,17 +52,28 @@ export const ReaderView: React.FC<ReaderViewProps> = ({
   }
 
   const domain = extractDomain(story.url)
+  const hnUrl = `https://news.ycombinator.com/item?id=${story.id}`
 
-  const handleCopyLink = () => {
-    const link = story.url || `https://news.ycombinator.com/item?id=${story.id}`
-    navigator.clipboard.writeText(link)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
+  const handleCopyHnUrl = async () => {
+    const ok = await copyToClipboard(hnUrl)
+    if (ok) {
+      setCopiedType('hn')
+      setTimeout(() => setCopiedType(null), 2000)
+    }
+  }
+
+  const handleCopyArticleUrl = async () => {
+    if (!story.url) return
+    const ok = await copyToClipboard(story.url)
+    if (ok) {
+      setCopiedType('article')
+      setTimeout(() => setCopiedType(null), 2000)
+    }
   }
 
   const handleOpenDirect = () => {
     if (story.url) {
-      window.open(story.url, '_blank', 'noopener,noreferrer')
+      openExternalUrl(story.url)
     }
   }
 
@@ -79,23 +92,23 @@ export const ReaderView: React.FC<ReaderViewProps> = ({
 
   return (
     <div className="w-full h-full flex flex-col bg-black overflow-hidden">
-      {/* Ultra-compact, space-efficient Top Utility Bar (42px) */}
-      <div className="shrink-0 h-[44px] px-3 sm:px-5 bg-black/95 backdrop-blur-md border-b border-white/[0.08] flex items-center justify-between gap-3 select-none z-20">
+      {/* Space-efficient Top Utility Bar */}
+      <div className="shrink-0 h-[46px] px-3 sm:px-5 bg-black/95 backdrop-blur-md border-b border-white/[0.08] flex items-center justify-between gap-2.5 select-none z-20">
         {/* Left: Back button + Title & Domain */}
-        <div className="flex items-center gap-2.5 min-w-0">
+        <div className="flex items-center gap-2 min-w-0">
           {onBackToFeed && (
             <button
               onClick={onBackToFeed}
               title="Back to feed"
-              className="inline-flex items-center gap-1 px-2.5 py-1 bg-[#141414] hover:bg-[#202020] border border-white/[0.1] rounded text-xs font-mono-meta text-[#cccccc] hover:text-white transition-colors cursor-pointer shrink-0"
+              className="inline-flex items-center gap-1 px-2 py-1 bg-[#141414] hover:bg-[#202020] border border-white/[0.1] rounded text-xs font-mono-meta text-[#cccccc] hover:text-white transition-colors cursor-pointer shrink-0"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
               <span className="hidden sm:inline">Feed</span>
             </button>
           )}
 
-          <div className="flex items-center gap-2 min-w-0">
-            <h2 className="text-xs sm:text-sm font-medium text-white truncate max-w-sm sm:max-w-md lg:max-w-xl" title={story.title}>
+          <div className="flex items-center gap-1.5 min-w-0">
+            <h2 className="text-xs sm:text-sm font-medium text-white truncate max-w-xs sm:max-w-md lg:max-w-xl" title={story.title}>
               {story.title}
             </h2>
             {domain && (
@@ -108,11 +121,11 @@ export const ReaderView: React.FC<ReaderViewProps> = ({
         </div>
 
         {/* Right: Actions */}
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
           {/* Discussion jump button */}
           <button
             onClick={onOpenThread}
-            className="px-2.5 py-1 bg-[#141414] hover:bg-[#1f1f1f] border border-white/[0.08] rounded text-xs font-mono-meta text-[#cccccc] hover:text-white flex items-center gap-1.5 transition-colors cursor-pointer"
+            className="px-2 sm:px-2.5 py-1 bg-[#141414] hover:bg-[#1f1f1f] border border-white/[0.08] rounded text-xs font-mono-meta text-[#cccccc] hover:text-white flex items-center gap-1.5 transition-colors cursor-pointer"
           >
             <MessageSquare className="w-3 h-3 text-[#ff6600]" />
             <span className="hidden sm:inline">Discussion</span>
@@ -123,22 +136,61 @@ export const ReaderView: React.FC<ReaderViewProps> = ({
           {story.url && (
             <button
               onClick={handleOpenDirect}
-              title="Open full page in a new browser tab"
-              className="inline-flex items-center gap-1.5 px-3 py-1 bg-white text-black hover:bg-[#eaeaea] rounded text-xs font-mono-meta font-medium transition-colors cursor-pointer"
+              title="Open full page in browser tab (bypasses iframe restrictions)"
+              className="inline-flex items-center gap-1 px-2.5 sm:px-3 py-1 bg-white text-black hover:bg-[#eaeaea] rounded text-xs font-mono-meta font-medium transition-colors cursor-pointer"
             >
               <span>Open Tab</span>
               <ExternalLink className="w-3 h-3" />
             </button>
           )}
 
-          {/* Copy link button */}
+          {/* Copy HN Story URL */}
           <button
-            onClick={handleCopyLink}
-            title="Copy URL"
-            className="p-1 rounded text-[#777777] hover:text-white hover:bg-white/[0.06] transition-colors cursor-pointer"
+            onClick={handleCopyHnUrl}
+            title="Copy original Hacker News story URL to clipboard"
+            className={`inline-flex items-center gap-1 px-2 sm:px-2.5 py-1 rounded text-xs font-mono-meta border transition-colors cursor-pointer ${
+              copiedType === 'hn'
+                ? 'bg-[#ff6600]/20 text-[#ff6600] border-[#ff6600]/40 font-medium'
+                : 'bg-[#141414] hover:bg-[#202020] border-white/[0.08] text-[#cccccc] hover:text-white'
+            }`}
           >
-            {copied ? <Check className="w-3.5 h-3.5 text-green-400" /> : <Copy className="w-3.5 h-3.5" />}
+            {copiedType === 'hn' ? (
+              <>
+                <Check className="w-3 h-3 text-[#ff6600]" />
+                <span className="text-[11px]">HN Copied!</span>
+              </>
+            ) : (
+              <>
+                <Copy className="w-3 h-3 text-[#ff6600]" />
+                <span className="text-[11px]">Copy HN</span>
+              </>
+            )}
           </button>
+
+          {/* Copy Article URL */}
+          {story.url && (
+            <button
+              onClick={handleCopyArticleUrl}
+              title="Copy external article link to clipboard"
+              className={`inline-flex items-center gap-1 px-2 sm:px-2.5 py-1 rounded text-xs font-mono-meta border transition-colors cursor-pointer ${
+                copiedType === 'article'
+                  ? 'bg-white/20 text-white border-white/40 font-medium'
+                  : 'bg-[#141414] hover:bg-[#202020] border-white/[0.08] text-[#cccccc] hover:text-white'
+              }`}
+            >
+              {copiedType === 'article' ? (
+                <>
+                  <Check className="w-3 h-3 text-green-400" />
+                  <span className="text-[11px]">Link Copied!</span>
+                </>
+              ) : (
+                <>
+                  <Copy className="w-3 h-3 text-[#888888]" />
+                  <span className="text-[11px]">Copy Link</span>
+                </>
+              )}
+            </button>
+          )}
 
           {/* Comfort adjustments toggle for text posts */}
           {story.text && (
@@ -189,11 +241,27 @@ export const ReaderView: React.FC<ReaderViewProps> = ({
         </div>
       )}
 
-      {/* Main Content Area: Maximum Space Dedicated to Article or Post */}
-      <div className="flex-1 w-full h-full relative overflow-y-auto bg-black">
+      {/* Main Content Area */}
+      <div className="flex-1 w-full h-full relative overflow-hidden bg-black flex flex-col">
         {story.url ? (
-          /* Live Article Frame filling 100% of remaining width and height */
-          <div className="w-full h-full relative flex flex-col bg-[#050505]">
+          <div className="w-full flex-1 relative flex flex-col bg-[#050505] overflow-hidden">
+            {/* Publisher X-Frame-Options Warning Bar */}
+            <div className="shrink-0 bg-[#141414] border-b border-white/[0.08] px-3 sm:px-4 py-2 flex items-center justify-between gap-2 text-xs font-mono-meta">
+              <div className="flex items-center gap-2 text-[#999999] truncate min-w-0">
+                <AlertCircle className="w-3.5 h-3.5 text-[#ff6600] shrink-0" />
+                <span className="truncate text-[11px] sm:text-xs">
+                  Publisher restricts in-app embedding? Tap Open Tab for full view:
+                </span>
+              </div>
+              <button
+                onClick={handleOpenDirect}
+                className="inline-flex items-center gap-1 px-2.5 py-0.5 sm:py-1 bg-white text-black hover:bg-[#eaeaea] font-medium rounded text-[11px] shrink-0 cursor-pointer transition-colors"
+              >
+                <span>Open Tab</span>
+                <ExternalLink className="w-3 h-3" />
+              </button>
+            </div>
+
             {!iframeError ? (
               <iframe
                 src={story.url}
@@ -223,37 +291,39 @@ export const ReaderView: React.FC<ReaderViewProps> = ({
           </div>
         ) : (
           /* Self-post / Ask HN full distraction-free reading canvas */
-          <div className="max-w-4xl mx-auto px-6 sm:px-12 py-10 w-full">
-            <h1 className="text-2xl sm:text-3xl font-medium text-white mb-4 leading-snug tracking-tight">
-              {story.title}
-            </h1>
-            <div className="flex items-center gap-3 text-xs font-mono-meta text-[#777777] pb-6 mb-8 border-b border-white/[0.08]">
-              <span>by @{story.by}</span>
-              <span>·</span>
-              <span>{timeAgo(story.time)}</span>
-              <span>·</span>
-              <span>{story.score} points</span>
-              <span>·</span>
-              <button onClick={onOpenThread} className="text-[#ff6600] hover:underline">
-                {story.descendants || 0} comments
-              </button>
+          <div className="flex-1 overflow-y-auto">
+            <div className="max-w-4xl mx-auto px-6 sm:px-12 py-10 w-full">
+              <h1 className="text-2xl sm:text-3xl font-medium text-white mb-4 leading-snug tracking-tight">
+                {story.title}
+              </h1>
+              <div className="flex items-center gap-3 text-xs font-mono-meta text-[#777777] pb-6 mb-8 border-b border-white/[0.08]">
+                <span>by @{story.by}</span>
+                <span>·</span>
+                <span>{timeAgo(story.time)}</span>
+                <span>·</span>
+                <span>{story.score} points</span>
+                <span>·</span>
+                <button onClick={onOpenThread} className="text-[#ff6600] hover:underline">
+                  {story.descendants || 0} comments
+                </button>
+              </div>
+
+              {story.text ? (
+                <div
+                  className={`text-[#d4d4d4] ${fontClasses} ${lineHeightClasses} comment-content`}
+                  style={{ fontSize: `${prefs.fontSize}px` }}
+                  dangerouslySetInnerHTML={{ __html: cleanHnHtml(story.text) }}
+                />
+              ) : (
+                <p className="text-xs font-mono-meta text-[#666666]">
+                  No text body provided for this discussion.
+                </p>
+              )}
+
+              <footer className="mt-16 pt-8 border-t border-white/[0.06] text-center text-[11px] font-mono-meta text-[#555555]">
+                HN by PG · Ultra-Minimalist Hacker News
+              </footer>
             </div>
-
-            {story.text ? (
-              <div
-                className={`text-[#d4d4d4] ${fontClasses} ${lineHeightClasses} comment-content`}
-                style={{ fontSize: `${prefs.fontSize}px` }}
-                dangerouslySetInnerHTML={{ __html: cleanHnHtml(story.text) }}
-              />
-            ) : (
-              <p className="text-xs font-mono-meta text-[#666666]">
-                No text body provided for this discussion.
-              </p>
-            )}
-
-            <footer className="mt-16 pt-8 border-t border-white/[0.06] text-center text-[11px] font-mono-meta text-[#555555]">
-              Hacker News by PG · Made by Prashant
-            </footer>
           </div>
         )}
       </div>

@@ -41,6 +41,7 @@ export interface CommentNode {
   deleted?: boolean
   dead?: boolean
   totalDescendants?: number
+  isLoadingReplies?: boolean
 }
 
 export interface ExtractedLink {

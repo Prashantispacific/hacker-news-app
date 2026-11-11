@@ -78,8 +78,14 @@ export const AddChannelModal: React.FC<AddChannelModalProps> = ({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-150">
-      <div className="relative w-full max-w-md bg-[#0a0a0a] border border-white/[0.12] rounded-xl p-6 shadow-2xl">
+    <div
+      onClick={onClose}
+      className="fixed inset-0 z-50 flex items-center justify-center px-3 sm:px-4 pt-[max(1rem,calc(env(safe-area-inset-top,0px)+0.75rem))] pb-[max(1rem,env(safe-area-inset-bottom,0px))] bg-black/85 backdrop-blur-sm animate-in fade-in duration-150"
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="relative w-full max-w-md bg-[#0a0a0a] border border-white/[0.12] rounded-xl p-5 sm:p-6 shadow-2xl"
+      >
         <div className="flex items-center justify-between pb-4 border-b border-white/[0.08]">
           <div className="flex items-center gap-2">
             <Hash className="w-4 h-4 text-[#ff6600]" />
@@ -88,8 +94,10 @@ export const AddChannelModal: React.FC<AddChannelModalProps> = ({
             </h2>
           </div>
           <button
+            type="button"
             onClick={onClose}
-            className="text-[#666666] hover:text-white p-1 rounded transition-colors cursor-pointer"
+            aria-label="Close add channel modal"
+            className="w-8 h-8 rounded-full bg-white/[0.08] hover:bg-white/[0.16] active:bg-[#ff6600]/25 text-[#cccccc] hover:text-white flex items-center justify-center transition-colors cursor-pointer shrink-0"
           >
             <X className="w-4 h-4" />
           </button>

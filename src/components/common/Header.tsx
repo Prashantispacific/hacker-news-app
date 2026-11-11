@@ -32,16 +32,16 @@ export const Header: React.FC<HeaderProps> = ({
   }, [])
 
   return (
-    <header className="sticky top-0 z-30 w-full border-b border-white/[0.08] bg-black/95 backdrop-blur-md px-4 sm:px-6 h-14 flex items-center justify-between transition-colors">
+    <header className="sticky top-0 z-30 w-full border-b border-white/[0.08] bg-black/95 backdrop-blur-md px-4 sm:px-6 pt-[env(safe-area-inset-top,0px)] h-[calc(3.5rem+env(safe-area-inset-top,0px))] flex items-center justify-between transition-colors">
       {/* Brand logo & title */}
       <div className="flex items-center gap-3">
         <button
           onClick={() => onSelectTab('feed')}
           className="flex items-center gap-2.5 group text-left cursor-pointer focus:outline-none"
         >
-          {/* Classic Y Combinator Orange Box */}
-          <div className="w-5 h-5 bg-[#ff6600] rounded-[3px] flex items-center justify-center font-mono-meta font-bold text-xs text-white select-none group-hover:scale-105 transition-transform">
-            Y
+          {/* HN Orange Box */}
+          <div className="h-5 px-1 bg-[#ff6600] rounded-[3px] flex items-center justify-center font-mono-meta font-extrabold text-[11px] text-white tracking-tight select-none group-hover:scale-105 transition-transform min-w-[22px]">
+            HN
           </div>
 
           <div className="flex items-baseline gap-1.5">
